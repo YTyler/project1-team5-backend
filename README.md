@@ -33,12 +33,16 @@ Create a social media application utilizing nodejs and react to provide people a
 
 ## Stories
 
-### User 
+### Visitor
+* View posts
+* View Comments
+
+### User
+* ___All Visitor Stories___
 * Make an account
 * Edit its own profile
 * Delete its own profile
-* View posts
-* View Comments
+
 * Comment on posts
 * Create a post
 * Delete its own post
