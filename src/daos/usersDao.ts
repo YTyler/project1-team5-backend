@@ -1,6 +1,6 @@
 import {QueryCommand, DeleteCommand, PutCommand, ScanCommand} from "@aws-sdk/lib-dynamodb";
-import UsersModel, {UsersInter} from "@entities/usersModel";
-import {ddbDoc} from "@daos/db/dynamo";
+import UsersModel, {UsersInter} from "../entities/usersModel";
+import {ddbDoc} from "../../db/dynamo";
 
 export interface IUserDao {
     getOne: (name: string) => Promise<UsersModel|null>;
