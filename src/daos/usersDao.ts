@@ -1,37 +1,41 @@
-import {QueryCommand, DeleteCommand, PutCommand, ScanCommand} from "@aws-sdk/lib-dynamodb";
+import {QueryCommand, DeleteCommand, PutCommand, ScanCommand, GetCommand} from "@aws-sdk/lib-dynamodb";
 import UsersModel, {UsersInter} from "../entities/usersModel";
 import {ddbDoc} from "../../db/dynamo";
+import { userAgentMiddleware } from "@aws-sdk/middleware-user-agent";
 
 export interface IUserDao {
-    getOne: (name: string) => Promise<UsersModel|null>;
+    getOne: (id: number) => Promise<UsersModel|null>;
     getAll: () => Promise<UsersModel[]>;
     add: (iUser: UsersModel) => Promise<void>;
     update: (iUser: UsersModel) => Promise<void>;
-    delete: (name: string) => Promise<void>;
+    delete: (id: number) => Promise<void>;
 }
 
 class UserDao implements IUserDao{
-    private TableName = '';
+    private TableName = 'Sylph';
 
-    public async getOne(name: string): Promise<UsersModel|null>{
+    public async getOne(id: number): Promise<UsersModel|null>{
         const params = {
             TableName: this.TableName,
-            FilterExpression: "userName = :userName",
-            ExpressionAttributeValues: {
-                ':userName': name,
-            }, 
+            // FilterExpression: "userName = :userName",
+            // ExpressionAttributeValues: {
+            //     ':userName': name,
+            // }, 
+            Key: {
+                type: "user",
+                id: id
+            }
         };
 
-        const data = await ddbDoc.send(new ScanCommand(params));
-        let TeamData:UsersInter;
+        try{
+            const data = await ddbDoc.send(new GetCommand(params));
+            return data.Item as UsersInter;
+        }catch (err){
+            console.error(err);
+            return null;
+        }
 
-        if(data.Items !== undefined){
-            for(let i of data.Items){
-                TeamData = (new UsersModel(i.userName, i.password, i.email, i.profile, i.postsUser));
-                return Promise.resolve(TeamData)
-                }
-            }
-            return Promise.resolve(null);
+        
     }
 
 
@@ -53,7 +57,7 @@ class UserDao implements IUserDao{
                 console.log("It worked! :D", data.Items);
 
             for(let i of data.Items){
-                Udata = (new UsersModel(i.userName, i.password, i.email, i.profile, i.postsUser));
+                Udata = (new UsersModel(i.userName, i.password, i.email, i.id, i.profile, i.postsUser));
                 user.push(Udata); 
             }
             }
@@ -69,12 +73,14 @@ class UserDao implements IUserDao{
         const params = {
             TableName: this.TableName,
             Item: {
+                type: "user",
                 userName: user.userName,
                 password: user.password,
                 email: user.email,
+                id: user.id,
                 profile: user.profile,
                 postsUser: user.postsUser,
-            }
+            },
         };
         console.log(params.Item);
         try {
@@ -98,7 +104,7 @@ class UserDao implements IUserDao{
                 console.log("It works! :D", data.Items);
             let userS:UsersModel;
             for(let i of data.Items){
-                userS = (new UsersModel(i.userName, i.password, i.email, i.profile, i.postsUser));
+                userS = (new UsersModel(i.userName, i.password, i.email, i.id, i.profile, i.postsUser));
                 if(user){
                     Object.entries(user).forEach(([key, item])=> {
                         userS[`${key}`] = item;
@@ -115,13 +121,14 @@ class UserDao implements IUserDao{
 
 
 
-    public async delete(name: string): Promise<void>{
-        let iUser = await this.getOne(name);
+    public async delete(id: number): Promise<void>{
+        let iUser = await this.getOne(id);
         if(iUser){
             const params = {
                 TableName: this.TableName,
                 Key: {
-                    userName: iUser.userName,
+                    type: "user",
+                    id: id,
                 }
             };
             try{
