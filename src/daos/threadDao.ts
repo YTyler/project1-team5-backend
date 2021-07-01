@@ -4,11 +4,11 @@ import {ddbDoc} from "../../db/dynamo";
 
 export interface IThreadDao {
     getOneAuthor: (author: string) => Promise<ThreadModel|null>;
-    getOneTitle: (title: string) => Promise<ThreadModel|null>;
+    getOneThread: (id: number) => Promise<ThreadModel|null>;
     getAll: () => Promise<ThreadModel[]>;
     add: (iThread: ThreadModel) => Promise<void>;
     update: (iThread: ThreadModel) => Promise<void>;
-    delete: (title: string) => Promise<void>;
+    delete: (id: number) => Promise<void>;
 }
 
 class ThreadDao implements IThreadDao{
@@ -38,7 +38,7 @@ class ThreadDao implements IThreadDao{
         
     }
 
-    public async getOneTitle(title: string): Promise<ThreadModel|null>{
+    public async getOneThread(id: number): Promise<ThreadModel|null>{
         const params = {
             TableName: this.TableName,
             // FilterExpression: "userName = :userName",
@@ -47,7 +47,7 @@ class ThreadDao implements IThreadDao{
             // }, 
             Key: {
                 type: "user",
-                id: title
+                id: id
             }
         };
 
@@ -81,7 +81,7 @@ class ThreadDao implements IThreadDao{
                 console.log("It worked! :D", data.Items);
 
             for(let i of data.Items){
-                Udata = (new ThreadModel(i.author, i.title, i.date, i.description, i.media));
+                Udata = (new ThreadModel(i.author, i.title, i.date, i.description, i.media, i.id));
                 user.push(Udata); 
             }
             }
@@ -103,6 +103,7 @@ class ThreadDao implements IThreadDao{
                 date: iThread.date,
                 description: iThread.description,
                 media: iThread.media,
+                id: iThread.id
             },
         };
         console.log(params.Item);
@@ -127,7 +128,7 @@ class ThreadDao implements IThreadDao{
                 console.log("It works! :D", data.Items);
             let thread:ThreadModel;
             for(let i of data.Items){
-                thread = (new ThreadModel(i.author, i.title, i.date, i.description, i.media));
+                thread = (new ThreadModel(i.author, i.title, i.date, i.description, i.media, i.id));
                 if(thread){
                     Object.entries(thread).forEach(([key, item])=> {
                         thread[`${key}`] = item;
@@ -144,14 +145,14 @@ class ThreadDao implements IThreadDao{
 
 
 
-    public async delete(title: string): Promise<void>{
-        let iUser = await this.getOneTitle(title);
+    public async delete(id: number): Promise<void>{
+        let iUser = await this.getOneThread(id);
         if(iUser){
             const params = {
                 TableName: this.TableName,
                 Key: {
                     type: "user",
-                    id: title,
+                    id: id,
                 }
             };
             try{

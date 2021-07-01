@@ -17,9 +17,9 @@ export async function getAuthor(req: Request, res: Response) {
     return res.status(OK).json(authors).end();
 }
 
-export async function getTitle(req: Request, res: Response) {
-    const title= (req.params.title);
-    const titles = await TD.getOneTitle(title);
+export async function getThread(req: Request, res: Response) {
+    const id = parseInt(req.params.id);
+    const titles = await TD.getOneThread(id);
     return res.status(OK).json(titles).end();
 }
 
@@ -35,7 +35,7 @@ export async function updateThread(req: Request, res: Response) {
 }
 
 export async function deleteThread(req: Request, res: Response) {
-    const {title} = req.params;
-    await TD.delete(title);
+    const {id} = req.params;
+    await TD.delete(Number(id));
     res.status(StatusCodes.ACCEPTED).end();
 }
