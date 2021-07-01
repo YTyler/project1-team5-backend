@@ -1,20 +1,20 @@
 import {QueryCommand, DeleteCommand, PutCommand, ScanCommand, GetCommand} from "@aws-sdk/lib-dynamodb";
-import UsersModel, {UsersInter} from "../entities/usersModel";
+import ThreadModel, {ThreadInter} from "../entities/threadModel";
 import {ddbDoc} from "../../db/dynamo";
-import { assertUserWhitespacable } from "@babel/types";
 
-export interface IUserDao {
-    getOne: (id: number) => Promise<UsersModel|null>;
-    getAll: () => Promise<UsersModel[]>;
-    add: (iUser: UsersModel) => Promise<void>;
-    update: (iUser: UsersModel) => Promise<void>;
-    delete: (id: number) => Promise<void>;
+export interface IThreadDao {
+    getOneAuthor: (author: string) => Promise<ThreadModel|null>;
+    getOneTitle: (title: string) => Promise<ThreadModel|null>;
+    getAll: () => Promise<ThreadModel[]>;
+    add: (iThread: ThreadModel) => Promise<void>;
+    update: (iThread: ThreadModel) => Promise<void>;
+    delete: (title: string) => Promise<void>;
 }
 
-class UserDao implements IUserDao{
+class ThreadDao implements IThreadDao{
     private TableName = 'Sylph';
 
-    public async getOne(id: number): Promise<UsersModel|null>{
+    public async getOneAuthor(author: string): Promise<ThreadModel|null>{
         const params = {
             TableName: this.TableName,
             // FilterExpression: "userName = :userName",
@@ -23,13 +23,37 @@ class UserDao implements IUserDao{
             // }, 
             Key: {
                 type: "user",
-                id: id
+                id: author
             }
         };
 
         try{
             const data = await ddbDoc.send(new GetCommand(params));
-            return data.Item as UsersInter;
+            return data.Item as ThreadInter;
+        }catch (err){
+            console.error(err);
+            return null;
+        }
+
+        
+    }
+
+    public async getOneTitle(title: string): Promise<ThreadModel|null>{
+        const params = {
+            TableName: this.TableName,
+            // FilterExpression: "userName = :userName",
+            // ExpressionAttributeValues: {
+            //     ':userName': name,
+            // }, 
+            Key: {
+                type: "user",
+                id: title
+            }
+        };
+
+        try{
+            const data = await ddbDoc.send(new GetCommand(params));
+            return data.Item as ThreadInter;
         }catch (err){
             console.error(err);
             return null;
@@ -39,25 +63,25 @@ class UserDao implements IUserDao{
     }
 
 
-    public async getAll(): Promise<UsersModel[]>{
-        let user:UsersModel[] = [];
+    public async getAll(): Promise<ThreadModel[]>{
+        let user:ThreadModel[] = [];
 
         const params = {
             TableName: this.TableName,
             Items: {
-                ":userName": ''
+                ":author": ''
             },
 
-            Expression: "userName >= :userName",
+            Expression: "author >= :author",
         };
         try {
-            let Udata:UsersModel;
+            let Udata:ThreadModel;
             const data = await ddbDoc.send(new ScanCommand(params));
             if(data.Items){
                 console.log("It worked! :D", data.Items);
 
             for(let i of data.Items){
-                Udata = (new UsersModel(i.userName, i.password, i.email, i.id, i.profile));
+                Udata = (new ThreadModel(i.author, i.title, i.date, i.description, i.media));
                 user.push(Udata); 
             }
             }
@@ -69,16 +93,16 @@ class UserDao implements IUserDao{
     }
 
 
-    public async add(user: UsersModel): Promise<void>{
+    public async add(iThread: ThreadModel): Promise<void>{
         const params = {
             TableName: this.TableName,
             Item: {
                 type: "user",
-                userName: user.userName,
-                password: user.password,
-                email: user.email,
-                id: user.id,
-                profile: user.profile,
+                author: iThread.author,
+                title: iThread.title,
+                date: iThread.date,
+                description: iThread.description,
+                media: iThread.media,
             },
         };
         console.log(params.Item);
@@ -90,25 +114,25 @@ class UserDao implements IUserDao{
         }
     }
 
-    public async update(user: UsersModel): Promise<void>{
+    public async update(iThread: ThreadModel): Promise<void>{
         const params = {
             TableName: this.TableName,
             Item: {
-                ":userName": user.userName
+                ":author": iThread.author
             }
         };
         try {  
             const data = await ddbDoc.send(new ScanCommand(params));
             if(data.Items){
                 console.log("It works! :D", data.Items);
-            let userS:UsersModel;
+            let thread:ThreadModel;
             for(let i of data.Items){
-                userS = (new UsersModel(i.userName, i.password, i.email, i.id, i.profile));
-                if(userS){
-                    Object.entries(userS).forEach(([key, item])=> {
-                        userS[`${key}`] = item;
+                thread = (new ThreadModel(i.author, i.title, i.date, i.description, i.media));
+                if(thread){
+                    Object.entries(thread).forEach(([key, item])=> {
+                        thread[`${key}`] = item;
                     })
-                await this.add(userS)
+                await this.add(thread)
                     }
                 }
             }
@@ -120,14 +144,14 @@ class UserDao implements IUserDao{
 
 
 
-    public async delete(id: number): Promise<void>{
-        let iUser = await this.getOne(id);
+    public async delete(title: string): Promise<void>{
+        let iUser = await this.getOneTitle(title);
         if(iUser){
             const params = {
                 TableName: this.TableName,
                 Key: {
                     type: "user",
-                    id: id,
+                    id: title,
                 }
             };
             try{
@@ -145,4 +169,4 @@ class UserDao implements IUserDao{
 
 }
 
-export default UserDao
+export default ThreadDao;
