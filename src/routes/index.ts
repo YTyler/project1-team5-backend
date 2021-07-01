@@ -4,13 +4,13 @@ import {addOneUser, getAllUsers, getUser, updateUser, deleteUser} from "./user"
 
 // User-route
 const userRouter = Router();
-userRouter.get('/user/:id', getUser);
+userRouter.get('/:id', getUser);
 userRouter.get('/getUser', getAllUsers )
-userRouter.post('/add', addOneUser);
+userRouter.post('/', addOneUser);
 userRouter.put('/:id', updateUser);
 userRouter.delete('/deleteUser/:id', deleteUser);
 
 // Export the base-router
 const baseRouter = Router();
-baseRouter.use('/', userRouter);
+baseRouter.use('/user', userRouter);
 export default baseRouter;
