@@ -4,13 +4,13 @@ import StatusCodes from 'http-status-codes';
 import UserDao from "../daos/usersDao";
 // import {UsersInter} from "../entities/usersModel";
 
-const {BAD_REQUEST, CREATED, OK} = StatusCodes;
+const {ACCEPTED, CREATED, OK} = StatusCodes;
 const UD = new UserDao();
 
-export async function addOneUser(req: Request, res: Response) {
+export async function addUser(req: Request, res: Response) {
     const user = req.body;
     await UD.add(user);
-    return res.status(OK).json(user).end()
+    return res.status(CREATED).json(user).end()
 }
 
 export async function getUser(req: Request, res: Response) {
@@ -27,12 +27,11 @@ export async function getAllUsers(req: Request, res: Response) {
 export async function updateUser(req: Request, res: Response) {
     const user = req.body;
     await UD.update(user);
-    return res.status(StatusCodes.ACCEPTED).end();
+    return res.status(ACCEPTED).end();
 }
 
 export async function deleteUser(req: Request, res: Response) {
     const {id} = req.params;
-    console.log(req.params);
     await UD.delete(Number(id));
-    res.status(StatusCodes.ACCEPTED).end();
+    res.status(ACCEPTED).end();
 }
