@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import {addOneUser, getAllUsers, getUser, updateUser, deleteUser} from "./user"
-import {addThread, getAllAuthors, getAuthor, getThread, updateThread, deleteThread} from "./thread"
+import {addThread, getAllAuthors, getAuthor, getThread, updateThread, deleteThread} from "./thread";
+import {addPost, getAllAuthorsPost, getAuthorPost, getPost, updatePost, deletePost} from "./post";
+
 
 
 // User-route
@@ -20,8 +22,19 @@ threadRouter.post("/", addThread);
 threadRouter.put('/:id', updateThread);
 threadRouter.delete('/:id', deleteThread);
 
+//Post-route
+const postRouter = Router();
+threadRouter.get("/:author", getAuthorPost);
+threadRouter.get("/id/:id", getPost);
+threadRouter.get("/all", getAllAuthorsPost);
+threadRouter.post("/", addPost);
+threadRouter.put('/:id', updatePost);
+threadRouter.delete('/:id', deletePost);
+
+
 // Export the base-router
 const baseRouter = Router();
 baseRouter.use('/user', userRouter);
-baseRouter.use('/thread', threadRouter)
+baseRouter.use('/thread', threadRouter);
+baseRouter.use('/post', postRouter);
 export default baseRouter;
