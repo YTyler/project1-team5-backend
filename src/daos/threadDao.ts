@@ -1,7 +1,6 @@
 import {QueryCommand, DeleteCommand, PutCommand, ScanCommand, GetCommand} from "@aws-sdk/lib-dynamodb";
 import ThreadModel, {ThreadInter} from "../entities/threadModel";
 import {ddbDoc} from "../../db/dynamo";
-import { LocalSecondaryIndex } from "@aws-sdk/client-dynamodb";
 
 export interface IThreadDao {
     getOneAuthor: (author: string) => Promise<ThreadModel|null>;
