@@ -12,7 +12,7 @@ export interface IUserDao {
 }
 
 class UserDao implements IUserDao{
-    private TableName = 'Sylph';
+    private TableName = 'Test';
 
     public async getOne(id: number): Promise<UsersModel|null>{
         const params = {

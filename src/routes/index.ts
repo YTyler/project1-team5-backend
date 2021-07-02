@@ -14,7 +14,7 @@ userRouter.delete('/deleteUser/:id', deleteUser);
 //Thread-route
 const threadRouter = Router();
 threadRouter.get("/:author", getAuthor);
-threadRouter.get("/:id", getThread);
+threadRouter.get("/id/:id", getThread);
 threadRouter.get("/all", getAllAuthors);
 threadRouter.post("/", addThread);
 threadRouter.put('/:id', updateThread);

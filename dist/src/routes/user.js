@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteUser = exports.updateUser = exports.getAllUsers = exports.getUser = exports.addOneUser = void 0;
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const usersDao_1 = __importDefault(require("../daos/usersDao"));
-// import {UsersInter} from "../entities/usersModel";
 const { BAD_REQUEST, CREATED, OK } = http_status_codes_1.default;
 const UD = new usersDao_1.default();
 async function addOneUser(req, res) {
