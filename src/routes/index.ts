@@ -1,17 +1,16 @@
 import { Router } from 'express';
-import {addOneUser, getAllUsers, getUser, updateUser, deleteUser} from "./user"
+import {addUser, getAllUsers, getUser, updateUser, deleteUser} from "./user"
 import {addThread, getAllAuthors, getAuthor, getThread, updateThread, deleteThread} from "./thread";
 import {addPost, getAllAuthorsPost, getAuthorPost, getPost, updatePost, deletePost} from "./post";
-
 
 
 // User-route
 const userRouter = Router();
 userRouter.get('/:id', getUser);
-userRouter.get('/getUser', getAllUsers )
-userRouter.post('/', addOneUser);
+userRouter.get('/all', getAllUsers)
+userRouter.post('/', addUser);
 userRouter.put('/:id', updateUser);
-userRouter.delete('/deleteUser/:id', deleteUser);
+userRouter.delete('/:id', deleteUser);
 
 //Thread-route
 const threadRouter = Router();
