@@ -1,7 +1,7 @@
 import {QueryCommand, DeleteCommand, PutCommand, ScanCommand, GetCommand} from "@aws-sdk/lib-dynamodb";
 import UsersModel, {UsersInter} from "../entities/usersModel";
 import {ddbDoc} from "../../db/dynamo";
-import { userAgentMiddleware } from "@aws-sdk/middleware-user-agent";
+import { assertUserWhitespacable } from "@babel/types";
 
 export interface IUserDao {
     getOne: (id: number) => Promise<UsersModel|null>;
@@ -12,7 +12,7 @@ export interface IUserDao {
 }
 
 class UserDao implements IUserDao{
-    private TableName = 'Sylph';
+    private TableName = 'Test';
 
     public async getOne(id: number): Promise<UsersModel|null>{
         const params = {
@@ -57,7 +57,7 @@ class UserDao implements IUserDao{
                 console.log("It worked! :D", data.Items);
 
             for(let i of data.Items){
-                Udata = (new UsersModel(i.userName, i.password, i.email, i.id, i.profile, i.postsUser));
+                Udata = (new UsersModel(i.userName, i.password, i.email, i.id, i.profile));
                 user.push(Udata); 
             }
             }
@@ -79,7 +79,6 @@ class UserDao implements IUserDao{
                 email: user.email,
                 id: user.id,
                 profile: user.profile,
-                postsUser: user.postsUser,
             },
         };
         console.log(params.Item);
@@ -104,9 +103,9 @@ class UserDao implements IUserDao{
                 console.log("It works! :D", data.Items);
             let userS:UsersModel;
             for(let i of data.Items){
-                userS = (new UsersModel(i.userName, i.password, i.email, i.id, i.profile, i.postsUser));
-                if(user){
-                    Object.entries(user).forEach(([key, item])=> {
+                userS = (new UsersModel(i.userName, i.password, i.email, i.id, i.profile));
+                if(userS){
+                    Object.entries(userS).forEach(([key, item])=> {
                         userS[`${key}`] = item;
                     })
                 await this.add(userS)

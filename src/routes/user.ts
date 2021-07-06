@@ -2,7 +2,6 @@ import {Request, Response} from 'express';
 import StatusCodes from 'http-status-codes';
 
 import UserDao from "../daos/usersDao";
-// import {UsersInter} from "../entities/usersModel";
 
 const {ACCEPTED, CREATED, OK} = StatusCodes;
 const UD = new UserDao();

@@ -4,13 +4,44 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
-const usersModel_1 = __importDefault(require("../entities/usersModel"));
+const threadModel_1 = __importDefault(require("../entities/threadModel"));
 const dynamo_1 = require("../../db/dynamo");
-class UserDao {
+class ThreadDao {
     constructor() {
-        this.TableName = 'Test';
+        this.TableName = 'Testing';
     }
-    async getOne(id) {
+    async getOneAuthor(author) {
+        let user = [];
+        const params = {
+            TableName: this.TableName,
+            // FilterExpression: "userName = :userName",
+            // ExpressionAttributeValues: {
+            //     ':userName': name,
+            // },
+            KeyConditionExpression: "Banana = :thread AND author = :author",
+            ExpressionAttributeValues: {
+                ":author": author,
+                ":thread": "thread"
+            },
+            IndexName: "Banana-author-index"
+        };
+        try {
+            const data = await dynamo_1.ddbDoc.send(new lib_dynamodb_1.QueryCommand(params));
+            let TData;
+            if (data.Items) {
+                console.log("It worked! :D", data.Items);
+                for (let i of data.Items) {
+                    TData = (new threadModel_1.default(i.author, i.title, i.date, i.description, i.media, i.id));
+                    return TData;
+                }
+            }
+        }
+        catch (err) {
+            console.error(err);
+            return null;
+        }
+    }
+    async getOneThread(id) {
         const params = {
             TableName: this.TableName,
             // FilterExpression: "userName = :userName",
@@ -18,7 +49,7 @@ class UserDao {
             //     ':userName': name,
             // }, 
             Key: {
-                type: "user",
+                Banana: "thread",
                 id: id
             }
         };
@@ -36,9 +67,9 @@ class UserDao {
         const params = {
             TableName: this.TableName,
             Items: {
-                ":userName": ''
+                ":author": ''
             },
-            Expression: "userName >= :userName",
+            Expression: "author >= :author",
         };
         try {
             let Udata;
@@ -46,7 +77,7 @@ class UserDao {
             if (data.Items) {
                 console.log("It worked! :D", data.Items);
                 for (let i of data.Items) {
-                    Udata = (new usersModel_1.default(i.userName, i.password, i.email, i.id, i.profile));
+                    Udata = (new threadModel_1.default(i.author, i.title, i.date, i.description, i.media, i.id));
                     user.push(Udata);
                 }
             }
@@ -56,16 +87,17 @@ class UserDao {
         }
         return user;
     }
-    async add(user) {
+    async add(iThread) {
         const params = {
             TableName: this.TableName,
             Item: {
-                type: "user",
-                userName: user.userName,
-                password: user.password,
-                email: user.email,
-                id: user.id,
-                profile: user.profile,
+                Banana: "thread",
+                author: iThread.author,
+                title: iThread.title,
+                date: iThread.date,
+                description: iThread.description,
+                media: iThread.media,
+                id: iThread.id
             },
         };
         console.log(params.Item);
@@ -77,25 +109,25 @@ class UserDao {
             console.error(error);
         }
     }
-    async update(user) {
+    async update(iThread) {
         const params = {
             TableName: this.TableName,
             Item: {
-                ":userName": user.userName
+                ":author": iThread.author
             }
         };
         try {
             const data = await dynamo_1.ddbDoc.send(new lib_dynamodb_1.ScanCommand(params));
             if (data.Items) {
                 console.log("It works! :D", data.Items);
-                let userS;
+                let thread;
                 for (let i of data.Items) {
-                    userS = (new usersModel_1.default(i.userName, i.password, i.email, i.id, i.profile));
-                    if (userS) {
-                        Object.entries(userS).forEach(([key, item]) => {
-                            userS[`${key}`] = item;
+                    thread = (new threadModel_1.default(i.author, i.title, i.date, i.description, i.media, i.id));
+                    if (thread) {
+                        Object.entries(thread).forEach(([key, item]) => {
+                            thread[`${key}`] = item;
                         });
-                        await this.add(userS);
+                        await this.add(thread);
                     }
                 }
             }
@@ -105,12 +137,12 @@ class UserDao {
         }
     }
     async delete(id) {
-        let iUser = await this.getOne(id);
+        let iUser = await this.getOneThread(id);
         if (iUser) {
             const params = {
                 TableName: this.TableName,
                 Key: {
-                    type: "user",
+                    type: "thread",
                     id: id,
                 }
             };
@@ -127,4 +159,4 @@ class UserDao {
         }
     }
 }
-exports.default = UserDao;
+exports.default = ThreadDao;
