@@ -23,12 +23,12 @@ threadRouter.delete('/:id', deleteThread);
 
 //Post-route
 const postRouter = Router();
-threadRouter.get("/:author", getAuthorPost);
-threadRouter.get("/id/:id", getPost);
-threadRouter.get("/all", getAllAuthorsPost);
-threadRouter.post("/", addPost);
-threadRouter.put('/:id', updatePost);
-threadRouter.delete('/:id', deletePost);
+postRouter.get("/:author", getAuthorPost);
+postRouter.get("/id/:id", getPost);
+postRouter.get("/all", getAllAuthorsPost);
+postRouter.post("/", addPost);
+postRouter.put('/:id', updatePost);
+postRouter.delete('/:id', deletePost);
 
 
 // Export the base-router
