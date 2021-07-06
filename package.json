@@ -6,7 +6,7 @@
     "scripts": {
         "test": "jest",
         "compile": "tsc",
-        "start": "tsc && node ./dist/src/app.js",
+        "start": "tsc && node ./dist/src/server.js",
         "start:dev": "nodemon"
     },
     "keywords": [],
