@@ -4,7 +4,20 @@ import {config} from "dotenv";
 config();
 
 const REGION:string = "us-east-2"
-const ddb:DynamoDBClient = new DynamoDBClient({region: REGION, credentials: {accessKeyId:process.env.AWS_ACCESS_KEY_ID!, secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!}})
+const config_dev = { 
+    region: REGION, 
+    credentials: { accessKeyId: process.env.AWS_ACCESS_KEY_ID!, secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY! } 
+}
+const config_test = {
+    ...(process.env.MOCK_DYNAMODB_ENDPOINT && {
+        endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
+        sslEnabled: false,
+        region: "local",
+    })
+}
+const isTest: boolean = process.env.NODE_ENV === 'test';
+
+const ddb:DynamoDBClient = isTest ? new DynamoDBClient(config_test) : new DynamoDBClient(config_dev)
 
 const marshallOptions = {
     // Whether to automatically convert empty strings, blobs, and sets to `null`.

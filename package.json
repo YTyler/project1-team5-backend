@@ -4,9 +4,9 @@
     "description": "",
     "main": "app.js",
     "scripts": {
-        "test": "cross-env NODE_OPTIONS=--experimental-vm-modules npx jest",
+        "test": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules npx jest",
         "compile": "tsc",
-        "start": "tsc && node ./dist/src/server.js",
+        "start": "tsc && cross-env NODE_ENV=prod node ./dist/src/server.js",
         "start:dev": "nodemon"
     },
     "keywords": [],
