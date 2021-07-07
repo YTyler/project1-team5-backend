@@ -1,13 +1,7 @@
 import { Router } from 'express';
-<<<<<<< HEAD
-import {addOneUser, getAllUsers, getUser, updateUser, deleteUser} from "./user"
+import {addUser, getAllUsers, getUser, updateUser, deleteUser} from "./user"
 import {addThread, getAllAuthors, getAuthor, getThread, deleteThread} from "./thread";
 import {addPost, getAllPosts, getAuthorPost, getPost, deletePost} from "./post";
-=======
-import {addUser, getAllUsers, getUser, updateUser, deleteUser} from "./user"
-import {addThread, getAllAuthors, getAuthor, getThread, updateThread, deleteThread} from "./thread";
-import {addPost, getAllAuthorsPost, getAuthorPost, getPost, updatePost, deletePost} from "./post";
->>>>>>> 2b24780cf4b1b4eb3c3eb91747793269fc9393c1
 
 
 // User-route
@@ -31,15 +25,9 @@ threadRouter.delete('/:id', deleteThread);
 const postRouter = Router();
 postRouter.get("/:author", getAuthorPost);
 postRouter.get("/id/:id", getPost);
-<<<<<<< HEAD
 postRouter.get("/all", getAllPosts);
 postRouter.post("/", addPost);
 // postRouter.put('/:author', updatePost);
-=======
-postRouter.get("/all", getAllAuthorsPost);
-postRouter.post("/", addPost);
-postRouter.put('/:id', updatePost);
->>>>>>> 2b24780cf4b1b4eb3c3eb91747793269fc9393c1
 postRouter.delete('/:id', deletePost);
 
 
