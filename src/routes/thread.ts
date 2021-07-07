@@ -28,11 +28,11 @@ export async function getAllAuthors(req: Request, res: Response) {
     return res.status(OK).json({author: author});
 }
 
-export async function updateThread(req: Request, res: Response) {
-    const thread = req.body;
-    await TD.update(thread);
-    return res.status(StatusCodes.ACCEPTED).end();
-}
+// export async function updateThread(req: Request, res: Response) {
+//     const thread = req.body;
+//     await TD.update(thread);
+//     return res.status(StatusCodes.ACCEPTED).end();
+// }
 
 export async function deleteThread(req: Request, res: Response) {
     const {id} = req.params;

@@ -8,7 +8,7 @@ const usersModel_1 = __importDefault(require("../entities/usersModel"));
 const dynamo_1 = require("../../db/dynamo");
 class UserDao {
     constructor() {
-        this.TableName = 'Test';
+        this.TableName = 'SYLPH_TABLE';
     }
     async getOne(id) {
         const params = {
@@ -18,7 +18,7 @@ class UserDao {
             //     ':userName': name,
             // }, 
             Key: {
-                type: "user",
+                kind: "user",
                 id: id
             }
         };
@@ -32,35 +32,34 @@ class UserDao {
         }
     }
     async getAll() {
-        let user = [];
+        let post = [];
         const params = {
             TableName: this.TableName,
-            Items: {
-                ":userName": ''
+            ExpressionAttributeValues: {
+                ":kind": "user",
             },
-            Expression: "userName >= :userName",
+            FilterExpression: "kind = :kind",
         };
         try {
-            let Udata;
-            const data = await dynamo_1.ddbDoc.send(new lib_dynamodb_1.ScanCommand(params));
-            if (data.Items) {
-                console.log("It worked! :D", data.Items);
-                for (let i of data.Items) {
-                    Udata = (new usersModel_1.default(i.userName, i.password, i.email, i.id, i.profile));
-                    user.push(Udata);
+            const posts = await dynamo_1.ddbDoc.send(new lib_dynamodb_1.ScanCommand(params));
+            if (posts.Items) {
+                console.log("It worked");
+                for (let i of posts.Items) {
+                    let Pdata = new usersModel_1.default(i.userName, i.password, i.email, i.id, i.profile);
+                    post.push(Pdata);
                 }
             }
         }
-        catch (error) {
-            console.error(error);
+        catch (err) {
+            console.log('Error: ', err);
         }
-        return user;
+        return post;
     }
     async add(user) {
         const params = {
             TableName: this.TableName,
             Item: {
-                type: "user",
+                kind: "user",
                 userName: user.userName,
                 password: user.password,
                 email: user.email,
@@ -80,50 +79,41 @@ class UserDao {
     async update(user) {
         const params = {
             TableName: this.TableName,
-            Item: {
-                ":userName": user.userName
+            Key: {
+                kind: "user",
+                id: user.id
+            },
+            UpdateExpression: "SET userName = :userName, password = :password, email = :email, profile = :profile",
+            ConditionExpression: 'attribute_exists(id)',
+            ExpressionAttributeValues: {
+                ":userName": user.userName,
+                ":password": user.password,
+                ":email": user.email,
+                ":profile": user.profile
             }
         };
         try {
-            const data = await dynamo_1.ddbDoc.send(new lib_dynamodb_1.ScanCommand(params));
-            if (data.Items) {
-                console.log("It works! :D", data.Items);
-                let userS;
-                for (let i of data.Items) {
-                    userS = (new usersModel_1.default(i.userName, i.password, i.email, i.id, i.profile));
-                    if (userS) {
-                        Object.entries(userS).forEach(([key, item]) => {
-                            userS[`${key}`] = item;
-                        });
-                        await this.add(userS);
-                    }
-                }
-            }
+            await dynamo_1.ddbDoc.send(new lib_dynamodb_1.UpdateCommand(params));
+            console.log("Updated");
         }
-        catch (error) {
-            console.error(error);
+        catch (err) {
+            console.log("Error: ", err);
         }
     }
     async delete(id) {
-        let iUser = await this.getOne(id);
-        if (iUser) {
-            const params = {
-                TableName: this.TableName,
-                Key: {
-                    type: "user",
-                    id: id,
-                }
-            };
-            try {
-                const data = await dynamo_1.ddbDoc.send(new lib_dynamodb_1.DeleteCommand(params));
-                console.log(data);
+        const params = {
+            TableName: this.TableName,
+            Key: {
+                kind: "user",
+                id: id,
             }
-            catch (error) {
-                console.error(error);
-            }
+        };
+        try {
+            await dynamo_1.ddbDoc.send(new lib_dynamodb_1.DeleteCommand(params));
+            console.log("user is deleted");
         }
-        else {
-            console.log("Team is lost in time");
+        catch (error) {
+            console.error(error);
         }
     }
 }

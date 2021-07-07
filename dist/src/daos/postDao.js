@@ -1,53 +1,42 @@
-import {QueryCommand, DeleteCommand, PutCommand, ScanCommand, GetCommand, UpdateCommand} from "@aws-sdk/lib-dynamodb";
-import PostModel, {PostInter} from "../entities/postModel";
-import {ddbDoc} from "../../db/dynamo";
-
-export interface IPostDao {
-    getOneAuthor: (author: string) => Promise<PostModel|null>;
-    getOnePost: (id: number) => Promise<PostModel|null>;
-    //getAllPosts: () => Promise<PostModel[]>;
-    add: (iPost: PostModel) => Promise<void>;
-    // update: (author: string, id: number) => Promise<void>;
-    delete: (id: number) => Promise<void>;
-}
-
-class PostDao implements IPostDao{
-    private TableName = 'SYLPH_TABLE';
-
-    public async getOneAuthor(author: string): Promise<PostModel|null>{
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
+const postModel_1 = __importDefault(require("../entities/postModel"));
+const dynamo_1 = require("../../db/dynamo");
+class PostDao {
+    constructor() {
+        this.TableName = 'SYLPH_TABLE';
+    }
+    async getOneAuthor(author) {
         const params = {
             TableName: this.TableName,
-            KeyConditionExpression:
-                "Banana = :post AND author = :author" ,
+            KeyConditionExpression: "Banana = :post AND author = :author",
             ExpressionAttributeValues: {
                 ":author": author,
                 ":post": "post"
             },
             IndexName: "Banana-author-index"
-            
         };
-
-        try{
-            const data = await ddbDoc.send(new QueryCommand(params));
-
-            let PData:PostModel;
-            if(data.Items){
+        try {
+            const data = await dynamo_1.ddbDoc.send(new lib_dynamodb_1.QueryCommand(params));
+            let PData;
+            if (data.Items) {
                 console.log("It worked! :D", data.Items);
-
-            for(let i of data.Items){
-                PData = (new PostModel(i.author, i.title, i.date, i.description, i.media, i.id));
-                return PData
+                for (let i of data.Items) {
+                    PData = (new postModel_1.default(i.author, i.title, i.date, i.description, i.media, i.id));
+                    return PData;
+                }
             }
         }
-    }catch (err){
+        catch (err) {
             console.error(err);
             return null;
         }
-
-    }  
-    
-
-    public async getOnePost(id: number): Promise<PostModel|null>{
+    }
+    async getOnePost(id) {
         const params = {
             TableName: this.TableName,
             // FilterExpression: "userName = :userName",
@@ -59,22 +48,17 @@ class PostDao implements IPostDao{
                 id: id
             }
         };
-
-        try{
-            const data = await ddbDoc.send(new GetCommand(params));
-            return data.Item as PostInter;
-        }catch (err){
+        try {
+            const data = await dynamo_1.ddbDoc.send(new lib_dynamodb_1.GetCommand(params));
+            return data.Item;
+        }
+        catch (err) {
             console.error(err);
             return null;
         }
-
-        
     }
-
-
     // public async getAllPosts(): Promise<PostModel[]> {
     //     let post:PostModel[] = [];
-
     //     const params = { 
     //         TableName: this.TableName ,
     //         ExpressionAttributeValues: {
@@ -82,7 +66,6 @@ class PostDao implements IPostDao{
     //         },
     //         FilterExpression: "kind = :kind",
     //     };
-    
     //     try {
     //       const posts = await ddbDoc.send(new ScanCommand(params));
     //       if(posts.Items){
@@ -97,9 +80,7 @@ class PostDao implements IPostDao{
     //     }
     //     return post
     //   }
-
-
-    public async add(iPost: PostModel): Promise<void>{
+    async add(iPost) {
         const params = {
             TableName: this.TableName,
             Item: {
@@ -114,13 +95,13 @@ class PostDao implements IPostDao{
         };
         console.log(params.Item);
         try {
-            const data = await ddbDoc.send(new PutCommand(params));
+            const data = await dynamo_1.ddbDoc.send(new lib_dynamodb_1.PutCommand(params));
             console.log(data);
-        } catch(error){
+        }
+        catch (error) {
             console.error(error);
         }
     }
-
     // public async update(author: string): Promise<void>{
     //     const params = {
     //         TableName: this.TableName,
@@ -138,32 +119,25 @@ class PostDao implements IPostDao{
     //         console.log(author, "Here I am");
     //         await ddbDoc.send(new UpdateCommand(params));
     //         console.log("It works");
-
     //     } catch (error){
     //         console.error(error);
     //     }
     // }
-
-
-
-    public async delete(id: number): Promise<void>{
-            const params = {
-                TableName: this.TableName,
-                Key: {
-                    Banana: "post",
-                    id: id,
-                }
-            };
-            try{
-                await ddbDoc.send(new DeleteCommand(params));
-                console.log("Post is deleted");
-
-            } catch(error){
-                console.error(error);
-
+    async delete(id) {
+        const params = {
+            TableName: this.TableName,
+            Key: {
+                Banana: "post",
+                id: id,
             }
+        };
+        try {
+            await dynamo_1.ddbDoc.send(new lib_dynamodb_1.DeleteCommand(params));
+            console.log("Post is deleted");
+        }
+        catch (error) {
+            console.error(error);
+        }
     }
-
 }
-
-export default PostDao;
+exports.default = PostDao;

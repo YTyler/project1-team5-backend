@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteThread = exports.updateThread = exports.getAllAuthors = exports.getThread = exports.getAuthor = exports.addThread = void 0;
+exports.deleteThread = exports.getAllAuthors = exports.getThread = exports.getAuthor = exports.addThread = void 0;
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const threadDao_1 = __importDefault(require("../daos/threadDao"));
 const { BAD_REQUEST, CREATED, OK } = http_status_codes_1.default;
@@ -31,12 +31,11 @@ async function getAllAuthors(req, res) {
     return res.status(OK).json({ author: author });
 }
 exports.getAllAuthors = getAllAuthors;
-async function updateThread(req, res) {
-    const thread = req.body;
-    await TD.update(thread);
-    return res.status(http_status_codes_1.default.ACCEPTED).end();
-}
-exports.updateThread = updateThread;
+// export async function updateThread(req: Request, res: Response) {
+//     const thread = req.body;
+//     await TD.update(thread);
+//     return res.status(StatusCodes.ACCEPTED).end();
+// }
 async function deleteThread(req, res) {
     const { id } = req.params;
     await TD.delete(Number(id));
