@@ -1,4 +1,7 @@
 module.exports = {
-  preset: 'ts-jest',
+  preset: 'jest-dynalite',
   testEnvironment: 'node',
+  transform: {
+    "^.+\\.(ts|tsx)$": "ts-jest"
+  },
 };

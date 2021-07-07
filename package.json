@@ -4,7 +4,7 @@
     "description": "",
     "main": "app.js",
     "scripts": {
-        "test": "jest",
+        "test": "cross-env NODE_OPTIONS=--experimental-vm-modules npx jest",
         "compile": "tsc",
         "start": "tsc && node ./dist/src/server.js",
         "start:dev": "nodemon"
@@ -26,6 +26,7 @@
         "@types/jest": "^26.0.23",
         "@types/node": "^15.12.2",
         "@types/supertest": "^2.0.11",
+        "cross-env": "^7.0.3",
         "jest": "^27.0.6",
         "jest-dynalite": "^3.3.1",
         "nodemon": "^2.0.9",
