@@ -23,16 +23,16 @@ export async function getPost(req: Request, res: Response) {
     return res.status(OK).json(titles).end();
 }
 
-export async function getAllAuthorsPost(req: Request, res: Response) {
-    const author = await PD.getAll();
-    return res.status(OK).json({author: author});
+export async function getAllPosts(req: Request, res: Response) {
+    return res.status(200).json(await PD.getAllPosts());
 }
 
-export async function updatePost(req: Request, res: Response) {
-    const post = req.body;
-    await PD.update(post);
-    return res.status(StatusCodes.ACCEPTED).end();
-}
+// export async function updatePost(req: Request, res: Response) {
+//     const author = req.params.author;
+//     console.log(author);
+//     await PD.update(author);
+//     return res.status(StatusCodes.ACCEPTED).end();
+// }
 
 export async function deletePost(req: Request, res: Response) {
     const {id} = req.params;

@@ -1,13 +1,13 @@
-import {QueryCommand, DeleteCommand, PutCommand, ScanCommand, GetCommand} from "@aws-sdk/lib-dynamodb";
+import {QueryCommand, DeleteCommand, PutCommand, ScanCommand, GetCommand, UpdateCommand} from "@aws-sdk/lib-dynamodb";
 import PostModel, {PostInter} from "../entities/postModel";
 import {ddbDoc} from "../../db/dynamo";
 
 export interface IPostDao {
     getOneAuthor: (author: string) => Promise<PostModel|null>;
     getOnePost: (id: number) => Promise<PostModel|null>;
-    getAll: () => Promise<PostModel[]>;
+    getAllPosts();
     add: (iPost: PostModel) => Promise<void>;
-    update: (iPost: PostModel) => Promise<void>;
+    //update: (author: string, id: number) => Promise<void>;
     delete: (id: number) => Promise<void>;
 }
 
@@ -15,13 +15,8 @@ class PostDao implements IPostDao{
     private TableName = 'Testing';
 
     public async getOneAuthor(author: string): Promise<PostModel|null>{
-        let user:PostModel[] = [];
         const params = {
             TableName: this.TableName,
-            // FilterExpression: "userName = :userName",
-            // ExpressionAttributeValues: {
-            //     ':userName': name,
-            // },
             KeyConditionExpression:
                 "Banana = :post AND author = :author" ,
             ExpressionAttributeValues: {
@@ -77,34 +72,16 @@ class PostDao implements IPostDao{
     }
 
 
-    public async getAll(): Promise<PostModel[]>{
-        let user:PostModel[] = [];
-
-        const params = {
-            TableName: this.TableName,
-            Items: {
-                ":author": ''
-            },
-
-            Expression: "author >= :author",
-        };
+    public async getAllPosts() {
+        const params = { TableName: this.TableName };
+    
         try {
-            let PData:PostModel;
-            const data = await ddbDoc.send(new ScanCommand(params));
-            if(data.Items){
-                console.log("It worked! :D", data.Items);
-
-            for(let i of data.Items){
-                PData = (new PostModel(i.author, i.title, i.date, i.description, i.media, i.id));
-                user.push(PData); 
-            }
-            }
-
-        } catch (error){
-            console.error(error);
+          const posts = await ddbDoc.send(new ScanCommand(params));
+          return posts.Items;
+        } catch (err) {
+          console.log('Error: ', err);
         }
-        return user;
-    }
+      }
 
 
     public async add(iPost: PostModel): Promise<void>{
@@ -129,57 +106,47 @@ class PostDao implements IPostDao{
         }
     }
 
-    public async update(iPost: PostModel): Promise<void>{
-        const params = {
-            TableName: this.TableName,
-            Item: {
-                ":author": iPost.author
-            }
-        };
-        try {  
-            const data = await ddbDoc.send(new ScanCommand(params));
-            if(data.Items){
-                console.log("It works! :D", data.Items);
-            let post:PostModel;
-            for(let i of data.Items){
-                post = (new PostModel(i.author, i.title, i.date, i.description, i.media, i.id));
-                if(post){
-                    Object.entries(post).forEach(([key, item])=> {
-                        post[`${key}`] = item;
-                    })
-                        await this.add(post)
-                    }
-                }
-            }
+    // public async update(author: string): Promise<void>{
+    //     const params = {
+    //         TableName: this.TableName,
+    //         Key:{
+    //             Banana: "post",
+    //             id: 69
+    //         },
+    //         UpdateExpression: 
+    //             "set author = :author",
+    //         ExpressionAttributeValues: {
+    //             ":author": author
+    //         },
+    //     };
+    //     try {  
+    //         console.log(author, "Here I am");
+    //         await ddbDoc.send(new UpdateCommand(params));
+    //         console.log("It works");
 
-        } catch (error){
-            console.error(error);
-        }
-    }
+    //     } catch (error){
+    //         console.error(error);
+    //     }
+    // }
 
 
 
     public async delete(id: number): Promise<void>{
-        let iPost = await this.getOnePost(id);
-        if(iPost){
             const params = {
                 TableName: this.TableName,
                 Key: {
-                    type: "post",
+                    Banana: "post",
                     id: id,
                 }
             };
             try{
-                const data = await ddbDoc.send(new DeleteCommand(params));
-                console.log(data);
+                await ddbDoc.send(new DeleteCommand(params));
+                console.log("Post is deleted");
 
             } catch(error){
                 console.error(error);
 
             }
-        } else{
-            console.log("Team is lost in time");
-        }
     }
 
 }

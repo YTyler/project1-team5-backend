@@ -11,13 +11,8 @@ class ThreadDao {
         this.TableName = 'Testing';
     }
     async getOneAuthor(author) {
-        let user = [];
         const params = {
             TableName: this.TableName,
-            // FilterExpression: "userName = :userName",
-            // ExpressionAttributeValues: {
-            //     ':userName': name,
-            // },
             KeyConditionExpression: "Banana = :thread AND author = :author",
             ExpressionAttributeValues: {
                 ":author": author,
@@ -44,10 +39,6 @@ class ThreadDao {
     async getOneThread(id) {
         const params = {
             TableName: this.TableName,
-            // FilterExpression: "userName = :userName",
-            // ExpressionAttributeValues: {
-            //     ':userName': name,
-            // }, 
             Key: {
                 Banana: "thread",
                 id: id
@@ -109,53 +100,47 @@ class ThreadDao {
             console.error(error);
         }
     }
-    async update(iThread) {
+    //TODO
+    // public async update(iThread: ThreadModel): Promise<void>{
+    //     const params = {
+    //         TableName: this.TableName,
+    //         Item: {
+    //             ":author": iThread.author
+    //         }
+    //     };
+    //     try {  
+    //         const data = await ddbDoc.send(new ScanCommand(params));
+    //         if(data.Items){
+    //             console.log("It works! :D", data.Items);
+    //         let thread:ThreadModel;
+    //         for(let i of data.Items){
+    //             thread = (new ThreadModel(i.author, i.title, i.date, i.description, i.media, i.id));
+    //             if(thread){
+    //                 Object.entries(thread).forEach(([key, item])=> {
+    //                     thread[`${key}`] = item;
+    //                 })
+    //                     await this.add(thread)
+    //                 }
+    //             }
+    //         }
+    //     } catch (error){
+    //         console.error(error);
+    //     }
+    // }
+    async delete(id) {
         const params = {
             TableName: this.TableName,
-            Item: {
-                ":author": iThread.author
+            Key: {
+                Banana: "thread",
+                id: id,
             }
         };
         try {
-            const data = await dynamo_1.ddbDoc.send(new lib_dynamodb_1.ScanCommand(params));
-            if (data.Items) {
-                console.log("It works! :D", data.Items);
-                let thread;
-                for (let i of data.Items) {
-                    thread = (new threadModel_1.default(i.author, i.title, i.date, i.description, i.media, i.id));
-                    if (thread) {
-                        Object.entries(thread).forEach(([key, item]) => {
-                            thread[`${key}`] = item;
-                        });
-                        await this.add(thread);
-                    }
-                }
-            }
+            await dynamo_1.ddbDoc.send(new lib_dynamodb_1.DeleteCommand(params));
+            console.log("Thread is deleted");
         }
         catch (error) {
             console.error(error);
-        }
-    }
-    async delete(id) {
-        let iUser = await this.getOneThread(id);
-        if (iUser) {
-            const params = {
-                TableName: this.TableName,
-                Key: {
-                    type: "thread",
-                    id: id,
-                }
-            };
-            try {
-                const data = await dynamo_1.ddbDoc.send(new lib_dynamodb_1.DeleteCommand(params));
-                console.log(data);
-            }
-            catch (error) {
-                console.error(error);
-            }
-        }
-        else {
-            console.log("Team is lost in time");
         }
     }
 }
