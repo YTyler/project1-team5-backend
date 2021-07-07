@@ -38,34 +38,31 @@ class UserDao implements IUserDao{
     }
 
 
-    public async getAll(): Promise<UsersModel[]>{
-        let user:UsersModel[] = [];
+    public async getAll(): Promise<UsersModel[]> {
+        let post:UsersModel[] = [];
 
-        const params = {
-            TableName: this.TableName,
+        const params = { 
+            TableName: this.TableName ,
             ExpressionAttributeValues: {
-                ":id": 0
+                ":kind": "user",
             },
-
-            Expression: "id >= :id",
+            FilterExpression: "kind = :kind",
         };
+    
         try {
-            let Udata:UsersModel;
-            const data = await ddbDoc.send(new ScanCommand(params));
-            if(data.Items){
-                console.log("It worked! :D", data.Items);
-
-            for(let i of data.Items){
-                Udata = (new UsersModel(i.userName, i.password, i.email, i.id, i.profile));
-                user.push(Udata); 
-            }
-            }
-
-        } catch (error){
-            console.error(error);
+          const posts = await ddbDoc.send(new ScanCommand(params));
+          if(posts.Items){
+              console.log("It worked");
+              for( let i of posts.Items){
+                  let Pdata:UsersModel = new UsersModel(i.userName, i.password, i.email, i.id, i.profile);
+                  post.push(Pdata);
+              }
+          }
+        } catch (err) {
+          console.log('Error: ', err);
         }
-        return user;
-    }
+        return post
+      }
 
 
     public async add(user: UsersModel): Promise<void>{

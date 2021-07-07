@@ -8,7 +8,7 @@ const usersModel_1 = __importDefault(require("../entities/usersModel"));
 const dynamo_1 = require("../../db/dynamo");
 class UserDao {
     constructor() {
-        this.TableName = 'Testing';
+        this.TableName = 'SYLPH_TABLE';
     }
     async getOne(id) {
         const params = {
@@ -18,7 +18,7 @@ class UserDao {
             //     ':userName': name,
             // }, 
             Key: {
-                Banana: "user",
+                kind: "user",
                 id: id
             }
         };
@@ -32,35 +32,34 @@ class UserDao {
         }
     }
     async getAll() {
-        let user = [];
+        let post = [];
         const params = {
             TableName: this.TableName,
             ExpressionAttributeValues: {
-                ":id": 0
+                ":kind": "user",
             },
-            Expression: "id >= :id",
+            FilterExpression: "kind = :kind",
         };
         try {
-            let Udata;
-            const data = await dynamo_1.ddbDoc.send(new lib_dynamodb_1.ScanCommand(params));
-            if (data.Items) {
-                console.log("It worked! :D", data.Items);
-                for (let i of data.Items) {
-                    Udata = (new usersModel_1.default(i.userName, i.password, i.email, i.id, i.profile));
-                    user.push(Udata);
+            const posts = await dynamo_1.ddbDoc.send(new lib_dynamodb_1.ScanCommand(params));
+            if (posts.Items) {
+                console.log("It worked");
+                for (let i of posts.Items) {
+                    let Pdata = new usersModel_1.default(i.userName, i.password, i.email, i.id, i.profile);
+                    post.push(Pdata);
                 }
             }
         }
-        catch (error) {
-            console.error(error);
+        catch (err) {
+            console.log('Error: ', err);
         }
-        return user;
+        return post;
     }
     async add(user) {
         const params = {
             TableName: this.TableName,
             Item: {
-                Banana: "user",
+                kind: "user",
                 userName: user.userName,
                 password: user.password,
                 email: user.email,
@@ -81,7 +80,7 @@ class UserDao {
         const params = {
             TableName: this.TableName,
             Key: {
-                Banana: "user",
+                kind: "user",
                 id: user.id
             },
             UpdateExpression: "SET userName = :userName, password = :password, email = :email, profile = :profile",
@@ -105,7 +104,7 @@ class UserDao {
         const params = {
             TableName: this.TableName,
             Key: {
-                Banana: "user",
+                kind: "user",
                 id: id,
             }
         };

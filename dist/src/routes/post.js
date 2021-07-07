@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deletePost = exports.getAllPosts = exports.getPost = exports.getAuthorPost = exports.addPost = void 0;
+exports.deletePost = exports.getPost = exports.getAuthorPost = exports.addPost = void 0;
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const postDao_1 = __importDefault(require("../daos/postDao"));
 const { BAD_REQUEST, CREATED, OK } = http_status_codes_1.default;
@@ -26,10 +26,9 @@ async function getPost(req, res) {
     return res.status(OK).json(titles).end();
 }
 exports.getPost = getPost;
-async function getAllPosts(req, res) {
-    return res.status(200).json(await PD.getAllPosts());
-}
-exports.getAllPosts = getAllPosts;
+// export async function getAllPosts(req: Request, res: Response) {
+//     return res.status(200).json(await PD.getAllPosts());
+// }
 // export async function updatePost(req: Request, res: Response) {
 //     const author = req.params.author;
 //     console.log(author);

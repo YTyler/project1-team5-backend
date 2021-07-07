@@ -8,7 +8,7 @@ const postModel_1 = __importDefault(require("../entities/postModel"));
 const dynamo_1 = require("../../db/dynamo");
 class PostDao {
     constructor() {
-        this.TableName = 'Testing';
+        this.TableName = 'SYLPH_TABLE';
     }
     async getOneAuthor(author) {
         const params = {
@@ -57,16 +57,29 @@ class PostDao {
             return null;
         }
     }
-    async getAllPosts() {
-        const params = { TableName: this.TableName };
-        try {
-            const posts = await dynamo_1.ddbDoc.send(new lib_dynamodb_1.ScanCommand(params));
-            return posts.Items;
-        }
-        catch (err) {
-            console.log('Error: ', err);
-        }
-    }
+    // public async getAllPosts(): Promise<PostModel[]> {
+    //     let post:PostModel[] = [];
+    //     const params = { 
+    //         TableName: this.TableName ,
+    //         ExpressionAttributeValues: {
+    //             ":kind": "user",
+    //         },
+    //         FilterExpression: "kind = :kind",
+    //     };
+    //     try {
+    //       const posts = await ddbDoc.send(new ScanCommand(params));
+    //       if(posts.Items){
+    //           console.log("It worked");
+    //           for( let i of posts.Items){
+    //               let Pdata:PostModel(i.userName, i.password, i.email, i.id, i.profile)
+    //               post.push(Pdata);
+    //           }
+    //       }
+    //     } catch (err) {
+    //       console.log('Error: ', err);
+    //     }
+    //     return post
+    //   }
     async add(iPost) {
         const params = {
             TableName: this.TableName,

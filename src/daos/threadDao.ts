@@ -29,6 +29,7 @@ class ThreadDao implements IThreadDao{
 
         try{
             const data = await ddbDoc.send(new QueryCommand(params));
+            console.log("HERE?");
 
             let TData:ThreadModel;
             if(data.Items){
@@ -68,34 +69,31 @@ class ThreadDao implements IThreadDao{
     }
 
 
-    public async getAll(): Promise<ThreadModel[]>{
-        let user:ThreadModel[] = [];
+    public async getAll(): Promise<ThreadModel[]> {
+        let thread:ThreadModel[] = [];
 
-        const params = {
-            TableName: this.TableName,
-            Items: {
-                ":author": ''
+        const params = { 
+            TableName: this.TableName ,
+            ExpressionAttributeValues: {
+                ":kind": "thread",
             },
-
-            Expression: "author >= :author",
+            FilterExpression: "kind = :kind",
         };
+    
         try {
-            let Udata:ThreadModel;
-            const data = await ddbDoc.send(new ScanCommand(params));
-            if(data.Items){
-                console.log("It worked! :D", data.Items);
-
-            for(let i of data.Items){
-                Udata = (new ThreadModel(i.author, i.title, i.date, i.description, i.media, i.id));
-                user.push(Udata); 
-            }
-            }
-
-        } catch (error){
-            console.error(error);
+          const threads = await ddbDoc.send(new ScanCommand(params));
+          if(threads.Items){
+              console.log("It worked");
+              for( let i of threads.Items){
+                  let Tdata:ThreadModel = new ThreadModel(i.author, i.title, i.date, i.description, i.media, i.id);
+                  thread.push(Tdata);
+              }
+          }
+        } catch (err) {
+          console.log('Error: ', err);
         }
-        return user;
-    }
+        return thread
+      }
 
 
     public async add(iThread: ThreadModel): Promise<void>{

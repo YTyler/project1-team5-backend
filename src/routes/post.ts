@@ -23,9 +23,9 @@ export async function getPost(req: Request, res: Response) {
     return res.status(OK).json(titles).end();
 }
 
-export async function getAllPosts(req: Request, res: Response) {
-    return res.status(200).json(await PD.getAllPosts());
-}
+// export async function getAllPosts(req: Request, res: Response) {
+//     return res.status(200).json(await PD.getAllPosts());
+// }
 
 // export async function updatePost(req: Request, res: Response) {
 //     const author = req.params.author;

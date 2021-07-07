@@ -5,14 +5,14 @@ import {ddbDoc} from "../../db/dynamo";
 export interface IPostDao {
     getOneAuthor: (author: string) => Promise<PostModel|null>;
     getOnePost: (id: number) => Promise<PostModel|null>;
-    getAllPosts();
+    //getAllPosts: () => Promise<PostModel[]>;
     add: (iPost: PostModel) => Promise<void>;
-    //update: (author: string, id: number) => Promise<void>;
+    // update: (author: string, id: number) => Promise<void>;
     delete: (id: number) => Promise<void>;
 }
 
 class PostDao implements IPostDao{
-    private TableName = 'Testing';
+    private TableName = 'SYLPH_TABLE';
 
     public async getOneAuthor(author: string): Promise<PostModel|null>{
         const params = {
@@ -72,16 +72,31 @@ class PostDao implements IPostDao{
     }
 
 
-    public async getAllPosts() {
-        const params = { TableName: this.TableName };
+    // public async getAllPosts(): Promise<PostModel[]> {
+    //     let post:PostModel[] = [];
+
+    //     const params = { 
+    //         TableName: this.TableName ,
+    //         ExpressionAttributeValues: {
+    //             ":kind": "user",
+    //         },
+    //         FilterExpression: "kind = :kind",
+    //     };
     
-        try {
-          const posts = await ddbDoc.send(new ScanCommand(params));
-          return posts.Items;
-        } catch (err) {
-          console.log('Error: ', err);
-        }
-      }
+    //     try {
+    //       const posts = await ddbDoc.send(new ScanCommand(params));
+    //       if(posts.Items){
+    //           console.log("It worked");
+    //           for( let i of posts.Items){
+    //               let Pdata:PostModel(i.userName, i.password, i.email, i.id, i.profile)
+    //               post.push(Pdata);
+    //           }
+    //       }
+    //     } catch (err) {
+    //       console.log('Error: ', err);
+    //     }
+    //     return post
+    //   }
 
 
     public async add(iPost: PostModel): Promise<void>{
