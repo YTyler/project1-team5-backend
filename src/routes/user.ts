@@ -18,6 +18,13 @@ export async function getUser(req: Request, res: Response) {
     return res.status(OK).json(users).end();
 }
 
+export async function getOneUser(req: Request, res: Response) {
+    const name= req.params.userName;
+    console.log(name);
+    const users = await UD.getOneUser(name);
+    return res.status(OK).json(users).end();
+}
+
 export async function getAllUsers(req: Request, res: Response) {
     const users = await UD.getAll();
     return res.status(OK).json({userName: users});
