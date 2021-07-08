@@ -32,7 +32,7 @@ class ThreadDao implements IThreadDao{
 
             let TData:ThreadModel;
             if(data.Items){
-                console.log("It worked! :D", data.Items);
+                console.log("Data: ", data.Items);
 
             for(let i of data.Items){
                 TData = (new ThreadModel(i.author, i.title, i.date, i.description, i.media, i.id));
@@ -69,29 +69,21 @@ class ThreadDao implements IThreadDao{
 
 
     public async getAll(): Promise<ThreadModel[]> {
-        let thread:ThreadModel[] = [];
-
         const params = { 
-            TableName: this.TableName ,
+            TableName: this.TableName,
+            KeyConditionExpression: 'kind = :kind',
+       
             ExpressionAttributeValues: {
-                ":kind": "thread",
+                ":kind":"thread"
             },
-            FilterExpression: "kind = :kind",
         };
     
         try {
-          const threads = await ddbDoc.send(new ScanCommand(params));
-          if(threads.Items){
-              console.log("It worked");
-              for( let i of threads.Items){
-                  let Tdata:ThreadModel = new ThreadModel(i.author, i.title, i.date, i.description, i.media, i.id);
-                  thread.push(Tdata);
-              }
-          }
+          const data = await ddbDoc.send(new QueryCommand(params));
+          return data.Items as ThreadModel[];
         } catch (err) {
           console.log('Error: ', err);
         }
-        return thread
       }
 
 
@@ -108,7 +100,6 @@ class ThreadDao implements IThreadDao{
                 id: iThread.id
             },
         };
-        console.log(params.Item);
         try {
             const data = await ddbDoc.send(new PutCommand(params));
             console.log(data);

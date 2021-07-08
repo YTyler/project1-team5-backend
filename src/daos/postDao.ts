@@ -32,7 +32,7 @@ class PostDao implements IPostDao{
 
             let PData:PostModel;
             if(data.Items){
-                console.log("It worked! :D", data.Items);
+                console.log("Data: ", data.Items);
 
             for(let i of data.Items){
                 PData = (new PostModel(i.author, i.title, i.date, i.description, i.media, i.id));
@@ -112,7 +112,6 @@ class PostDao implements IPostDao{
                 id: iPost.id
             },
         };
-        console.log(params.Item);
         try {
             const data = await ddbDoc.send(new PutCommand(params));
             console.log(data);

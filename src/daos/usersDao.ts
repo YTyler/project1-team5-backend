@@ -57,29 +57,21 @@ class UserDao implements IUserDao{
 
 
     public async getAll(): Promise<UsersModel[]> {
-        let post:UsersModel[] = [];
-
         const params = { 
-            TableName: this.TableName ,
+            TableName: this.TableName,
+            KeyConditionExpression: 'kind = :kind',
+       
             ExpressionAttributeValues: {
-                ":kind": "user",
+                ":kind":"user"
             },
-            FilterExpression: "kind = :kind",
         };
     
         try {
-          const posts = await ddbDoc.send(new ScanCommand(params));
-          if(posts.Items){
-              console.log("It worked");
-              for( let i of posts.Items){
-                  let Pdata:UsersModel = new UsersModel(i.userName, i.password, i.email, i.id, i.profile);
-                  post.push(Pdata);
-              }
-          }
+          const data = await ddbDoc.send(new QueryCommand(params));
+          return data.Items as UsersModel[];
         } catch (err) {
           console.log('Error: ', err);
         }
-        return post
       }
 
 
@@ -95,7 +87,6 @@ class UserDao implements IUserDao{
                 profile: user.profile,
             },
         };
-        console.log(params.Item);
         try {
             const data = await ddbDoc.send(new PutCommand(params));
             console.log(data);
