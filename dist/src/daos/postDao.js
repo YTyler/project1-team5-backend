@@ -24,7 +24,7 @@ class PostDao {
             const data = await dynamo_1.ddbDoc.send(new lib_dynamodb_1.QueryCommand(params));
             let PData;
             if (data.Items) {
-                console.log("It worked! :D", data.Items);
+                console.log("Data: ", data.Items);
                 for (let i of data.Items) {
                     PData = (new postModel_1.default(i.author, i.title, i.date, i.description, i.media, i.id));
                     return PData;
@@ -93,7 +93,6 @@ class PostDao {
                 id: iPost.id
             },
         };
-        console.log(params.Item);
         try {
             const data = await dynamo_1.ddbDoc.send(new lib_dynamodb_1.PutCommand(params));
             console.log(data);

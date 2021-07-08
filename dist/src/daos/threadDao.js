@@ -24,7 +24,7 @@ class ThreadDao {
             const data = await dynamo_1.ddbDoc.send(new lib_dynamodb_1.QueryCommand(params));
             let TData;
             if (data.Items) {
-                console.log("It worked! :D", data.Items);
+                console.log("Data: ", data.Items);
                 for (let i of data.Items) {
                     TData = (new threadModel_1.default(i.author, i.title, i.date, i.description, i.media, i.id));
                     return TData;
@@ -54,28 +54,20 @@ class ThreadDao {
         }
     }
     async getAll() {
-        let thread = [];
         const params = {
             TableName: this.TableName,
+            KeyConditionExpression: 'kind = :kind',
             ExpressionAttributeValues: {
-                ":kind": "thread",
+                ":kind": "thread"
             },
-            FilterExpression: "kind = :kind",
         };
         try {
-            const threads = await dynamo_1.ddbDoc.send(new lib_dynamodb_1.ScanCommand(params));
-            if (threads.Items) {
-                console.log("It worked");
-                for (let i of threads.Items) {
-                    let Tdata = new threadModel_1.default(i.author, i.title, i.date, i.description, i.media, i.id);
-                    thread.push(Tdata);
-                }
-            }
+            const data = await dynamo_1.ddbDoc.send(new lib_dynamodb_1.QueryCommand(params));
+            return data.Items;
         }
         catch (err) {
             console.log('Error: ', err);
         }
-        return thread;
     }
     async add(iThread) {
         const params = {
@@ -90,7 +82,6 @@ class ThreadDao {
                 id: iThread.id
             },
         };
-        console.log(params.Item);
         try {
             const data = await dynamo_1.ddbDoc.send(new lib_dynamodb_1.PutCommand(params));
             console.log(data);

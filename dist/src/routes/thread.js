@@ -28,7 +28,7 @@ async function getThread(req, res) {
 exports.getThread = getThread;
 async function getAllAuthors(req, res) {
     const author = await TD.getAll();
-    return res.status(OK).json({ author: author });
+    return res.status(OK).json(author);
 }
 exports.getAllAuthors = getAllAuthors;
 // export async function updateThread(req: Request, res: Response) {

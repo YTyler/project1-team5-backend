@@ -22,14 +22,13 @@ async function getUser(req, res) {
 exports.getUser = getUser;
 async function getOneUser(req, res) {
     const name = req.params.userName;
-    console.log(name);
     const users = await UD.getOneUser(name);
     return res.status(OK).json(users).end();
 }
 exports.getOneUser = getOneUser;
 async function getAllUsers(req, res) {
     const users = await UD.getAll();
-    return res.status(OK).json({ userName: users });
+    return res.status(OK).json(users);
 }
 exports.getAllUsers = getAllUsers;
 async function updateUser(req, res) {

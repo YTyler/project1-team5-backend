@@ -13,10 +13,6 @@ class UserDao {
     async getOne(id) {
         const params = {
             TableName: this.TableName,
-            // FilterExpression: "userName = :userName",
-            // ExpressionAttributeValues: {
-            //     ':userName': name,
-            // }, 
             Key: {
                 kind: "user",
                 id: id
@@ -50,28 +46,20 @@ class UserDao {
         return Promise.resolve(null);
     }
     async getAll() {
-        let post = [];
         const params = {
             TableName: this.TableName,
+            KeyConditionExpression: 'kind = :kind',
             ExpressionAttributeValues: {
-                ":kind": "user",
+                ":kind": "user"
             },
-            FilterExpression: "kind = :kind",
         };
         try {
-            const posts = await dynamo_1.ddbDoc.send(new lib_dynamodb_1.ScanCommand(params));
-            if (posts.Items) {
-                console.log("It worked");
-                for (let i of posts.Items) {
-                    let Pdata = new usersModel_1.default(i.userName, i.password, i.email, i.id, i.profile);
-                    post.push(Pdata);
-                }
-            }
+            const data = await dynamo_1.ddbDoc.send(new lib_dynamodb_1.QueryCommand(params));
+            return data.Items;
         }
         catch (err) {
             console.log('Error: ', err);
         }
-        return post;
     }
     async add(user) {
         const params = {
@@ -85,7 +73,6 @@ class UserDao {
                 profile: user.profile,
             },
         };
-        console.log(params.Item);
         try {
             const data = await dynamo_1.ddbDoc.send(new lib_dynamodb_1.PutCommand(params));
             console.log(data);
