@@ -1,7 +1,7 @@
 module.exports = {
     tables: [
       {
-        TableName: "MOCK_SYLPH",
+        TableName: "SYLPH_MOCK",
         KeySchema: [{ AttributeName: "type", KeyType: "HASH" }, {AttributeName:"id", KeyType: "RANGE"}],
         AttributeDefinitions: [
           { AttributeName: "test", AttributeType: "S" }

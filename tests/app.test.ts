@@ -1,8 +1,6 @@
 import request from 'supertest'
 import app from '../src/app'
 
-
-
 describe('User Routes', () => {
 
   describe('POST /user', () => {
@@ -15,8 +13,5 @@ describe('User Routes', () => {
           expect(response.headers['content-type']).toEqual(expect.stringContaining("json"));
       });
   })
-  
-
-  
 
 })

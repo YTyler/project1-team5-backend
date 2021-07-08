@@ -13,10 +13,11 @@ const config_test = {
         endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
         sslEnabled: false,
         region: "local",
+        credentials: { accessKeyId: process.env.AWS_ACCESS_KEY_ID!, secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY! }
     })
 }
 const isTest: boolean = process.env.NODE_ENV === 'test';
-
+console.log(isTest)
 const ddb:DynamoDBClient = isTest ? new DynamoDBClient(config_test) : new DynamoDBClient(config_dev)
 
 const marshallOptions = {
