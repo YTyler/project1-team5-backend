@@ -3,22 +3,17 @@ import {DynamoDBDocumentClient} from "@aws-sdk/lib-dynamodb";
 import {config} from "dotenv";
 config();
 
-const REGION:string = "us-east-2"
-const config_dev = { 
-    region: REGION, 
-    credentials: { accessKeyId: process.env.AWS_ACCESS_KEY_ID!, secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY! } 
+const REGION:string = process.env.region || "us-east-2"
+
+const isTest = process.env.JEST_WORKER_ID;
+
+const DBconfig = {
+    region: REGION,
+    credentials: { accessKeyId: process.env.AWS_ACCESS_KEY_ID!, secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY! },
+    ...(isTest && { endpoint: 'localhost:8000', sslEnabled: false, region: 'local-env' })
 }
-const config_test = {
-    ...(process.env.MOCK_DYNAMODB_ENDPOINT && {
-        endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
-        sslEnabled: false,
-        region: "local",
-        credentials: { accessKeyId: process.env.AWS_ACCESS_KEY_ID!, secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY! }
-    })
-}
-const isTest: boolean = process.env.NODE_ENV === 'test';
-console.log(isTest)
-const ddb:DynamoDBClient = isTest ? new DynamoDBClient(config_test) : new DynamoDBClient(config_dev)
+
+const ddb:DynamoDBClient = new DynamoDBClient(DBconfig)
 
 const marshallOptions = {
     // Whether to automatically convert empty strings, blobs, and sets to `null`.

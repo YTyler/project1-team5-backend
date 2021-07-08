@@ -1,6 +1,5 @@
 module.exports = {
-  preset: 'jest-dynalite',
-  testEnvironment: 'node',
+  preset: '@shelf/jest-dynamodb',
   transform: {
     "^.+\\.(ts|tsx)$": "ts-jest"
   },
