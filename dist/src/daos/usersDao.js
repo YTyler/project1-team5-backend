@@ -31,6 +31,24 @@ class UserDao {
             return null;
         }
     }
+    async getOneUser(name) {
+        const params = {
+            TableName: this.TableName,
+            FilterExpression: "userName = :userName",
+            ExpressionAttributeValues: {
+                ':userName': name,
+            },
+        };
+        let UData = [];
+        const data = await dynamo_1.ddbDoc.send(new lib_dynamodb_1.ScanCommand(params));
+        if (data.Items !== undefined) {
+            for (let i of data.Items) {
+                UData.push(new usersModel_1.default(i.userName, i.password, i.email, i.id, i.profile));
+            }
+            return Promise.resolve(UData);
+        }
+        return Promise.resolve(null);
+    }
     async getAll() {
         let post = [];
         const params = {

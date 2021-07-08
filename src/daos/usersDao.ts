@@ -4,6 +4,7 @@ import {ddbDoc} from "../../db/dynamo";
 
 export interface IUserDao {
     getOne: (id: number) => Promise<UsersModel|null>;
+    getOneUser: (name: string) => Promise<UsersModel[]|null>;
     getAll: () => Promise<UsersModel[]>;
     add: (iUser: UsersModel) => Promise<void>;
     update: (iUser: UsersModel) => Promise<void>;
@@ -16,10 +17,6 @@ class UserDao implements IUserDao{
     public async getOne(id: number): Promise<UsersModel|null>{
         const params = {
             TableName: this.TableName,
-            // FilterExpression: "userName = :userName",
-            // ExpressionAttributeValues: {
-            //     ':userName': name,
-            // }, 
             Key: {
                 kind: "user",
                 id: id
@@ -35,6 +32,27 @@ class UserDao implements IUserDao{
         }
 
         
+    }
+
+    public async getOneUser(name: string): Promise<UsersModel[]|null>{
+        const params = {
+            TableName: this.TableName,
+            FilterExpression: "userName = :userName",
+            ExpressionAttributeValues: {
+                ':userName': name,
+            }, 
+        };
+            let UData:UsersModel[] = [];
+            const data = await ddbDoc.send(new ScanCommand(params));
+            
+            if(data.Items !== undefined){
+                for(let i of data.Items){
+                    UData.push(new UsersModel(i.userName, i.password, i.email, i.id, i.profile));
+                }
+                return Promise.resolve(UData);
+            }
+            return Promise.resolve(null); 
+
     }
 
 

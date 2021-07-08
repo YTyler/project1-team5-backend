@@ -29,7 +29,6 @@ class ThreadDao implements IThreadDao{
 
         try{
             const data = await ddbDoc.send(new QueryCommand(params));
-            console.log("HERE?");
 
             let TData:ThreadModel;
             if(data.Items){

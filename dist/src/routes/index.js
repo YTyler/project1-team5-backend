@@ -7,6 +7,7 @@ const post_1 = require("./post");
 // User-route
 const userRouter = express_1.Router();
 userRouter.get('/id/:id', user_1.getUser);
+userRouter.get('/name/:userName', user_1.getOneUser);
 userRouter.get('/all', user_1.getAllUsers);
 userRouter.post('/', user_1.addUser);
 userRouter.put('/:id', user_1.updateUser);

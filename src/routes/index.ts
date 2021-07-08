@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import {addUser, getAllUsers, getUser, updateUser, deleteUser} from "./user"
+import {addUser, getAllUsers, getUser, getOneUser,updateUser, deleteUser} from "./user"
 import {addThread, getAllAuthors, getAuthor, getThread, deleteThread} from "./thread";
 import {addPost, getAuthorPost, getPost, deletePost} from "./post";
 
@@ -7,6 +7,7 @@ import {addPost, getAuthorPost, getPost, deletePost} from "./post";
 // User-route
 const userRouter = Router();
 userRouter.get('/id/:id', getUser);
+userRouter.get('/name/:userName', getOneUser)
 userRouter.get('/all', getAllUsers)
 userRouter.post('/', addUser);
 userRouter.put('/:id', updateUser);

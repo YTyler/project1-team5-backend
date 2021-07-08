@@ -22,7 +22,6 @@ class ThreadDao {
         };
         try {
             const data = await dynamo_1.ddbDoc.send(new lib_dynamodb_1.QueryCommand(params));
-            console.log("HERE?");
             let TData;
             if (data.Items) {
                 console.log("It worked! :D", data.Items);

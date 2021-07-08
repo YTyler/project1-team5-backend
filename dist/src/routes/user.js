@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUser = exports.updateUser = exports.getAllUsers = exports.getUser = exports.addUser = void 0;
+exports.deleteUser = exports.updateUser = exports.getAllUsers = exports.getOneUser = exports.getUser = exports.addUser = void 0;
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const usersDao_1 = __importDefault(require("../daos/usersDao"));
 const { ACCEPTED, CREATED, OK } = http_status_codes_1.default;
@@ -20,6 +20,13 @@ async function getUser(req, res) {
     return res.status(OK).json(users).end();
 }
 exports.getUser = getUser;
+async function getOneUser(req, res) {
+    const name = req.params.userName;
+    console.log(name);
+    const users = await UD.getOneUser(name);
+    return res.status(OK).json(users).end();
+}
+exports.getOneUser = getOneUser;
 async function getAllUsers(req, res) {
     const users = await UD.getAll();
     return res.status(OK).json({ userName: users });
