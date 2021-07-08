@@ -1,19 +1,40 @@
-import {QueryCommand, DeleteCommand, PutCommand, ScanCommand} from "@aws-sdk/lib-dynamodb";
+import {QueryCommand, DeleteCommand, PutCommand, ScanCommand, GetCommand, UpdateCommand} from "@aws-sdk/lib-dynamodb";
 import UsersModel, {UsersInter} from "../entities/usersModel";
 import {ddbDoc} from "../../db/dynamo";
 
 export interface IUserDao {
-    getOne: (name: string) => Promise<UsersModel|null>;
+    getOne: (id: number) => Promise<UsersModel|null>;
+    getOneUser: (name: string) => Promise<UsersModel[]|null>;
     getAll: () => Promise<UsersModel[]>;
     add: (iUser: UsersModel) => Promise<void>;
     update: (iUser: UsersModel) => Promise<void>;
-    delete: (name: string) => Promise<void>;
+    delete: (id: number) => Promise<void>;
 }
 
 class UserDao implements IUserDao{
-    private TableName = '';
+    private TableName = 'SYLPH_TABLE';
 
-    public async getOne(name: string): Promise<UsersModel|null>{
+    public async getOne(id: number): Promise<UsersModel|null>{
+        const params = {
+            TableName: this.TableName,
+            Key: {
+                kind: "user",
+                id: id
+            }
+        };
+
+        try{
+            const data = await ddbDoc.send(new GetCommand(params));
+            return data.Item as UsersInter;
+        }catch (err){
+            console.error(err);
+            return null;
+        }
+
+        
+    }
+
+    public async getOneUser(name: string): Promise<UsersModel[]|null>{
         const params = {
             TableName: this.TableName,
             FilterExpression: "userName = :userName",
@@ -21,60 +42,58 @@ class UserDao implements IUserDao{
                 ':userName': name,
             }, 
         };
-
-        const data = await ddbDoc.send(new ScanCommand(params));
-        let TeamData:UsersInter;
-
-        if(data.Items !== undefined){
-            for(let i of data.Items){
-                TeamData = (new UsersModel(i.userName, i.password, i.email, i.profile, i.postsUser));
-                return Promise.resolve(TeamData)
-                }
-            }
-            return Promise.resolve(null);
-    }
-
-
-    public async getAll(): Promise<UsersModel[]>{
-        let user:UsersModel[] = [];
-
-        const params = {
-            TableName: this.TableName,
-            Items: {
-                ":userName": ''
-            },
-
-            Expression: "userName >= :userName",
-        };
-        try {
-            let Udata:UsersModel;
+            let UData:UsersModel[] = [];
             const data = await ddbDoc.send(new ScanCommand(params));
-            if(data.Items){
-                console.log("It worked! :D", data.Items);
-
-            for(let i of data.Items){
-                Udata = (new UsersModel(i.userName, i.password, i.email, i.profile, i.postsUser));
-                user.push(Udata); 
+            
+            if(data.Items !== undefined){
+                for(let i of data.Items){
+                    UData.push(new UsersModel(i.userName, i.password, i.email, i.id, i.profile));
+                }
+                return Promise.resolve(UData);
             }
-            }
+            return Promise.resolve(null); 
 
-        } catch (error){
-            console.error(error);
-        }
-        return user;
     }
+
+
+    public async getAll(): Promise<UsersModel[]> {
+        let post:UsersModel[] = [];
+
+        const params = { 
+            TableName: this.TableName ,
+            ExpressionAttributeValues: {
+                ":kind": "user",
+            },
+            FilterExpression: "kind = :kind",
+        };
+    
+        try {
+          const posts = await ddbDoc.send(new ScanCommand(params));
+          if(posts.Items){
+              console.log("It worked");
+              for( let i of posts.Items){
+                  let Pdata:UsersModel = new UsersModel(i.userName, i.password, i.email, i.id, i.profile);
+                  post.push(Pdata);
+              }
+          }
+        } catch (err) {
+          console.log('Error: ', err);
+        }
+        return post
+      }
 
 
     public async add(user: UsersModel): Promise<void>{
         const params = {
             TableName: this.TableName,
             Item: {
+                kind: "user",
                 userName: user.userName,
                 password: user.password,
                 email: user.email,
+                id: user.id,
                 profile: user.profile,
-                postsUser: user.postsUser,
-            }
+            },
         };
         console.log(params.Item);
         try {
@@ -88,54 +107,47 @@ class UserDao implements IUserDao{
     public async update(user: UsersModel): Promise<void>{
         const params = {
             TableName: this.TableName,
-            Item: {
-                ":userName": user.userName
+            Key: {
+                kind: "user",
+                id: user.id
+            },
+            UpdateExpression: "SET userName = :userName, password = :password, email = :email, profile = :profile",
+            ConditionExpression:'attribute_exists(id)',
+            ExpressionAttributeValues: {
+                ":userName": user.userName,
+                ":password": user.password,
+                ":email": user.email,
+                ":profile": user.profile
             }
         };
         try {  
-            const data = await ddbDoc.send(new ScanCommand(params));
-            if(data.Items){
-                console.log("It works! :D", data.Items);
-            let userS:UsersModel;
-            for(let i of data.Items){
-                userS = (new UsersModel(i.userName, i.password, i.email, i.profile, i.postsUser));
-                if(user){
-                    Object.entries(user).forEach(([key, item])=> {
-                        userS[`${key}`] = item;
-                    })
-                await this.add(userS)
-                    }
-                }
-            }
+            await ddbDoc.send(new UpdateCommand(params));
+            console.log("Updated");
+            
+        } catch(err){
+            console.log("Error: ", err);
+        }
+    }
 
-        } catch (error){
+
+
+    public async delete(id: number): Promise<void>{
+        const params = {
+            TableName: this.TableName,
+            Key: {
+                kind: "user",
+                id: id,
+            }
+        };
+        try{
+            await ddbDoc.send(new DeleteCommand(params));
+            console.log("user is deleted");
+
+        } catch(error){
             console.error(error);
+
         }
-    }
-
-
-
-    public async delete(name: string): Promise<void>{
-        let iUser = await this.getOne(name);
-        if(iUser){
-            const params = {
-                TableName: this.TableName,
-                Key: {
-                    userName: iUser.userName,
-                }
-            };
-            try{
-                const data = await ddbDoc.send(new DeleteCommand(params));
-                console.log(data);
-
-            } catch(error){
-                console.error(error);
-
-            }
-        } else{
-            console.log("Team is lost in time");
-        }
-    }
+}
 
 }
 

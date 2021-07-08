@@ -1,0 +1,15 @@
+    The Project 1 is a social media application utilizing nodejs and react to provide people a way to interact with one another.
+We are group 5, and the memebers consist of Jacob Kula, Matthew Otto, and Tyler Yates. We named our project, Sylph, it is based 
+off a Reddit clone. It includes Users and Threads that people can use to post their favorite moments and have people interact 
+with them. 
+    There are a different types of Users, they are Admins, Moderators, Users, and Visitors. They all have different roles that
+they can do. The Visitors are only allowed to view the Threads and that is it they cannot comment anything and they do not have
+a login. The Users have a login and password saved in the database, they are allowed to comment on posts, and they can edit 
+their own profile. The Moderators can do everything that a User can do however they can also do more as well. They can delete 
+other Users posts and comments. They have more power than the Users because they are assigned the role rather than just making 
+an account. The final role is Admins, they have the most power of any role. They can appoint Moderators as well as remove them.
+Their final power is that they can delete Users.
+    This Project 1 that we made consists of a front-end and a back-end. The front-end of the project consists of the HTML, CSS,
+and React code that the user will interact with. The back-end of the project consists of Typescript and Javascript, it is all
+code that the user will never interact with, on purpose. The back-end is the Restful API that interacts with a Dynamodb table 
+that will hold all the information that the user will use and see.
