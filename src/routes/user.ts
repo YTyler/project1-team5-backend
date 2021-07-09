@@ -13,7 +13,7 @@ export async function addUser(req: Request, res: Response) {
 }
 
 export async function getUser(req: Request, res: Response) {
-    const id= parseInt(req.params.id);
+    const id=parseInt(req.params.id);
     const users = await UD.getOne(id);
     return res.status(OK).json(users).end();
 }

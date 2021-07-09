@@ -88,7 +88,6 @@ class UserDao implements IUserDao{
         };
         try {
             const data = await ddbDoc.send(new PutCommand(params));
-            console.log(data);
         } catch(error){
             console.error(error);
         }
