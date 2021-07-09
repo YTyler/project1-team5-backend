@@ -1,6 +1,8 @@
 import request from 'supertest'
 import app from '../src/app'
 
+jest.mock('../db/dynamo')
+
 describe('User Routes', () => {
 
   describe('POST /user', () => {

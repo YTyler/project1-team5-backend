@@ -22,7 +22,6 @@ class UserDao implements IUserDao{
                 id: id
             }
         };
-
         try{
             const data = await ddbDoc.send(new GetCommand(params));
             return data.Item as UsersInter;

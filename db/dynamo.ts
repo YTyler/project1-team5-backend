@@ -28,4 +28,5 @@ const unmarshallOptions = {
 
 const translateConfig = { marshallOptions, unmarshallOptions };
 const ddbDoc = DynamoDBDocumentClient.from(ddb, translateConfig);
-export{ddbDoc};
+console.log('realDDB')
+export {ddbDoc};

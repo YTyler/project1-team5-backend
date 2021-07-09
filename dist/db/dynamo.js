@@ -6,11 +6,9 @@ const lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
 const dotenv_1 = require("dotenv");
 dotenv_1.config();
 const REGION = process.env.region || "us-east-2";
-const isTest = process.env.JEST_WORKER_ID;
 const DBconfig = {
     region: REGION,
     credentials: { accessKeyId: process.env.AWS_ACCESS_KEY_ID, secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY },
-    ...(isTest && { endpoint: 'localhost:8000', sslEnabled: false, region: 'local-env' })
 };
 const ddb = new client_dynamodb_1.DynamoDBClient(DBconfig);
 const marshallOptions = {

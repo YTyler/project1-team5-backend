@@ -1,10 +1,10 @@
 import {Request, Response} from 'express';
 import StatusCodes from 'http-status-codes';
-
 import UserDao from "../daos/usersDao";
 
 const {ACCEPTED, CREATED, OK} = StatusCodes;
 const UD = new UserDao();
+
 
 export async function addUser(req: Request, res: Response) {
     const user = req.body;
