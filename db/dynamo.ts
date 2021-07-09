@@ -10,7 +10,7 @@ const DBconfig = {
     credentials: { accessKeyId: process.env.AWS_ACCESS_KEY_ID!, secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY! },
 }
 
-const ddb:DynamoDBClient = new DynamoDBClient(DBconfig)
+export const ddb:DynamoDBClient = new DynamoDBClient(DBconfig)
 
 const marshallOptions = {
     // Whether to automatically convert empty strings, blobs, and sets to `null`.
