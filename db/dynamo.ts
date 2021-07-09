@@ -5,12 +5,9 @@ config();
 
 const REGION:string = process.env.region || "us-east-2"
 
-const isTest = process.env.JEST_WORKER_ID;
-
 const DBconfig = {
     region: REGION,
     credentials: { accessKeyId: process.env.AWS_ACCESS_KEY_ID!, secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY! },
-    ...(isTest && { endpoint: 'localhost:8000', sslEnabled: false, region: 'local-env' })
 }
 
 const ddb:DynamoDBClient = new DynamoDBClient(DBconfig)
