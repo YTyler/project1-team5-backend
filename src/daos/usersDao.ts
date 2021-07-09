@@ -118,8 +118,6 @@ class UserDao implements IUserDao{
         }
     }
 
-
-
     public async delete(id: number): Promise<void>{
         const params = {
             TableName: this.TableName,
@@ -136,7 +134,7 @@ class UserDao implements IUserDao{
             console.error(error);
 
         }
-}
+    }
 
 }
 
