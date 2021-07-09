@@ -4,7 +4,7 @@ import app from '../src/app'
 jest.mock('../db/dynamo')
 
 describe('User Routes', () => {
-
+  
   describe('POST /user', () => {
     it('should return a 201 status', async () => {
         const response = await request(app).post("/user").send({})
