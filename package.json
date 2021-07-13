@@ -7,7 +7,8 @@
         "test": "cross-env NODE_OPTIONS=--experimental-vm-modules npx jest --detectOpenHandles",
         "compile": "tsc",
         "start": "tsc && cross-env node ./dist/src/server.js",
-        "start:dev": "nodemon"
+        "start:dev": "nodemon",
+        "start:prod" : "node ./dist/src/server.js"
     },
     "keywords": [],
     "author": "",
