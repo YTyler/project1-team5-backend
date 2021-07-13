@@ -2,9 +2,8 @@ version: 0.0
 os: linux
 files: 
   - source: /
-    destination: /home/ec2-user
+    destination: /home/ec2-user/
 hooks:
   AfterInstall:
     - location: /home/ec2-user/dist/script.sh
-      timeout: 45
-      runas: ec2-user
+      timeout: 180
