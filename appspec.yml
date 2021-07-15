@@ -5,5 +5,10 @@ files:
     destination: /home/ec2-user/
 hooks:
   AfterInstall:
-    - location: /home/ec2-user/dist/script.sh
-      timeout: 180
+    - location: /home/ec2-user/dist/scripts/afterInstallScript.sh
+      timeout: 300
+      runas: root
+  ApplicationStop:
+      - location: /home/ec2-user/dist/scripts/applicationStopScript.sh
+        timeout: 300
+        runas: root
